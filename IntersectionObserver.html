@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 5vh;
+            width: 100%;
+        }
+
+        .box {
+            width: 33vw;
+            height: 33vh;
+            background-color: red;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <div id="box1" class="box"></div>
+        <div id="box2" class="box"></div>
+        <div id="box3" class="box"></div>
+        <div id="box1" class="box"></div>
+        <div id="box1" class="box"></div>
+        <div id="box1" class="box"></div>
+        <div id="box1" class="box"></div>
+        <div id="box1" class="box"></div>
+        <div id="box1" class="box"></div>
+        <div id="box1" class="box"></div>
+    </div>
+    <script>
+        let visibilityMap = new Map();
+        let mostVisibleElement = null;
+        let wait = 100
+        let timeoutId
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                visibilityMap.set(entry.target, entry.intersectionRatio);
+            });
+
+            clearTimeout(timeoutId)
+            timeoutId = setTimeout(() => {
+                mostVisibleElement = getMostVisibleElement(visibilityMap);
+                console.log("Most visible element:", mostVisibleElement)
+            }, wait)
+        }, {
+            root: null,
+            threshold: buildThresholdList(100)
+        });
+
+        const elementsToObserve = document.querySelectorAll('.box');
+        elementsToObserve.forEach(element => {
+            observer.observe(element);
+        });
+
+        function buildThresholdList(numSteps) {
+            let thresholds = [];
+
+            for (let i = 1.0; i <= numSteps; i++) {
+                let ratio = i / numSteps;
+                thresholds.push(ratio);
+            }
+
+            thresholds.push(0);
+            return thresholds;
+        }
+
+        function getMostVisibleElement(map) {
+            let maxVisibility = 0;
+            let maxVisibleElem = null;
+
+            for (let [elem, visibility] of map) {
+                if (visibility > maxVisibility) {
+                    maxVisibility = visibility;
+                    maxVisibleElem = elem;
+                }
+            }
+
+            return maxVisibleElem;
+        }
+    </script>
+</body>
+
+</html>
